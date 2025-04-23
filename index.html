@@ -31,7 +31,6 @@
         }
         input[type="text"],
         input[type="email"],
-        input[type="file"],
         input[type="date"],
         input[type="number"],
         select {
@@ -54,32 +53,11 @@
         button:hover {
             background-color: #45a049;
         }
-        #preview {
-            display: block;
-            max-width: 100%;
-            margin-top: 10px;
-        }
     </style>
-    <script>
-        function previewFile() {
-            const preview = document.getElementById('preview');
-            const file = document.getElementById('proof-of-payment').files[0];
-            const reader = new FileReader();
-
-            reader.addEventListener('load', function () {
-                // Convert file to base64 string and display it
-                preview.src = reader.result;
-            }, false);
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
 </head>
 <body>
     <h1>Subscription Form</h1>
-    <form action="https://formsubmit.co/empirevirtual99@gmail.com" method="POST" enctype="multipart/form-data">
+    <form action="https://formsubmit.co/empirevirtual99@gmail.com" method="POST"
         <label for="user-pin">User PIN:</label>
         <input type="number" id="user-pin" name="user-pin" required minlength="4" maxlength="4" oninput="this.value=this.value.slice(0,this.maxLength)">
         <br>
@@ -88,10 +66,6 @@
         <br>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
-        <br>
-        <label for="proof-of-payment">Proof of Payment:</label>
-        <input type="file" id="proof-of-payment" name="proof-of-payment" accept="image/*" onchange="previewFile()" required>
-        <img id="preview" src="" alt="Image preview...">
         <br>
         <label for="date">Date:</label>
         <input type="date" id="date" name="date" required>
